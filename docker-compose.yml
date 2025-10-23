@@ -1,0 +1,31 @@
+version: '3.5'
+
+services:
+  axora-rag:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: beacon-rag
+    environment:
+      - QDRANT_HOST=host.docker.internal
+      - QDRANT_PORT=6333
+      - QDRANT_COLLECTION=crawl_collection
+      - EMBEDDING_API_URL=http://host.docker.internal:8000
+      - OLLAMA_HOST=host.docker.internal:11434
+      - OLLAMA_MODEL=phi3:mini
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./:/app
+    command: python main.py
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+
+  
