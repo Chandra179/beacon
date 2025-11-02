@@ -1,7 +1,7 @@
 version: '3.5'
 
 services:
-  axora-rag:
+  beacon-rag:
     build:
       context: .
       dockerfile: Dockerfile
@@ -27,5 +27,23 @@ services:
           cpus: '0.25'
           memory: 256M
 
+  beacon-reranker:
+    build:
+      context: ./reranker_service
+      dockerfile: Dockerfile
+    container_name: beacon-reranker
+    ports:
+      - "8002:8002"
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+    environment:
+      - MODEL_NAME=BAAI/bge-reranker-large
+      - PORT=8002
 
   

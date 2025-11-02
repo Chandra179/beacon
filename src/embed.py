@@ -70,26 +70,36 @@ def get_vector_store():
     return vector_store
 
 
-def get_retriever(search_type="similarity", search_kwargs=None):
+def get_retriever(search_type="mmr", search_kwargs=None):
     """
     Get a retriever with specified search strategy
     
     Args:
         search_type: Type of search to perform
-            - "similarity": Standard similarity search (default)
-            - "mmr": Maximal Marginal Relevance (for diversity)
+            - "similarity": Standard similarity search
+            - "mmr": Maximal Marginal Relevance (for diversity) - DEFAULT for Phase 1
             - "similarity_score_threshold": Filter by similarity score
         search_kwargs: Additional search parameters
-            - k: Number of documents to retrieve (default: 4)
-            - score_threshold: Minimum similarity score (for similarity_score_threshold)
-            - fetch_k: Number of docs to fetch before MMR reranking (for mmr)
-            - lambda_mult: Diversity factor 0-1, where 1 is max diversity (for mmr)
+            For MMR (Phase 1 optimized):
+            - k: Final number of documents (default: 30 for reranking)
+            - fetch_k: Number of docs to fetch before MMR (default: 50)
+            - lambda_mult: Diversity factor 0-1 (default: 0.5)
+                * 0 = max relevance, might get redundant chunks
+                * 1 = max diversity, might miss details
+                * 0.5 = balanced (good for articles)
     """
     
+    # Phase 1 optimized defaults for MMR + Reranking
     if search_kwargs is None:
-        search_kwargs = {"k": 4}
+        search_kwargs = {
+            "k": 30,           # Retrieve 30 for reranking
+            "fetch_k": 50,     # Fetch 50 candidates before MMR
+            "lambda_mult": 0.5 # Balanced relevance/diversity
+        }
     
-    print(f"\nInitializing retriever with search_type='{search_type}' and kwargs={search_kwargs}")
+    print(f"\nInitializing retriever:")
+    print(f"  - Search type: '{search_type}'")
+    print(f"  - Parameters: {search_kwargs}")
     
     vector_store = get_vector_store()
     

@@ -5,3 +5,5 @@ langchain-ollama
 langchain_qdrant
 qdrant_client
 Requests
+uvicorn
+fastapi
