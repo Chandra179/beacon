@@ -1,0 +1,91 @@
+Initializing LLM:
+
+  - Model: phi3:mini
+
+  - Host: host.docker.internal:11434
+
+
+
+================================================================================
+
+PHASE 1 RETRIEVAL PIPELINE
+
+================================================================================
+
+
+[Step 1/2] MMR Retrieval...
+
+
+Initializing retriever:
+
+  - Search type: 'mmr'
+
+  - Parameters: {'k': 30, 'fetch_k': 50, 'lambda_mult': 0.5}
+
+Connecting to Qdrant: host.docker.internal:6333
+
+Collection: crawl_collection
+
+Embedding API: http://host.docker.internal:8000⁠
+
+✓ Collection exists with 1815 points
+
+✓ Retrieved 30 documents via MMR
+
+
+[Step 2/2] Reranking with BGE-reranker-large...
+
+Loading reranker model: BAAI/bge-reranker-large
+
+Using device: cpu
+
+✓ Reranker model loaded successfully on cpu
+
+✓ Reranked 30 → 5 documents
+
+
+Reranking Scores:
+
+  1. Score: 1.2249 | Untitled
+
+  2. Score: -0.4394 | Untitled
+
+  3. Score: -0.8587 | Untitled
+
+  4. Score: -0.9211 | Untitled
+
+  5. Score: -1.3752 | Untitled
+
+✓ Final context: 5 documents
+
+================================================================================
+
+
+
+================================================================================
+
+PROMPT SENT TO LLM
+
+================================================================================
+
+You are a helpful AI assistant. Use the following context to answer the question.
+
+Context:
+
+[Document(metadata={'_id': 'efd4ee42-5df0-541d-a776-c70b62c8303f', '_collection_name': 'crawl_collection', 'rerank_score': 1.2248951196670532}, page_content='time series and news. Latest News Stream - was last updated on Sunday, November 2, 2025. Commodity Index Stocks Forex Crypto Bond Actual Chg %Chg Crude Oil 60.980 0.41 0.68% Brent 64.770 0.40 0.62% Natural gas 4.1240 0.17 4.25% Gasoline 1.8985 0.01 0.31% Heating Oil 2.3995 0.01 -0.40% Gold 4004.43 20.18 -0.50% Silver 48.800 0.16 -0.33% Copper 5.0878 0.00 0.02% Soybeans 1099.75 8.50 0.78% Wheat 533.75 9.50 1.81% Coal 109.25 0.35 0.32% Steel 3067.00 21.00 -0.68% TTF Gas 31.29 0.08 -0.26% Lumber 539.50 3.50'), Document(metadata={'_id': '4cefc808-29b5-54cc-bd2d-0053ddf94dd6', '_collection_name': 'crawl_collection', 'rerank_score': -0.43940895795822144}, page_content='Prices Credit Rating More Indicators Forecasts Markets &amp; Indicators Countries Countries Indicators Commodities Indexes Currencies Crypto Bonds Solutions Data Subscriptions API Access Widgets Pricing Apps App Store Google Play Twitter About Customers Investors Careers About us Contact United States Stock Market Index Quote - Chart - Historical Data - News Summary Stats Forecast Alerts The Nasdaq Composite rose 0.7% and the S&amp;P 500 gained 0.3% on Friday, led by a 10.8% surge in Amazon shares after the'), Document(metadata={'_id': '0c8da3af-ff33-5e15-8ae6-a6544cb0cf0a', '_collection_name': 'crawl_collection', 'rerank_score': -0.8586643934249878}, page_content='IT40 43175 27 -0.06% ES35 16033 8 -0.05% ASX200 8882 4 -0.04% SHANGHAI 3955 32 -0.81% SENSEX 83939 466 -0.55% TSX 30261 82 0.27% MOEX 2533 7 0.30% IBOVESPA 149540 760 0.51% More Add to your site Actual Chg %Chg Apple 270.37 1.03 -0.38% Tesla 456.56 16.46 3.74% Microsoft 517.81 7.95 -1.51% Amazon 244.22 21.36 9.58% Meta 648.35 18.12 -2.72% Nvidia 202.49 0.40 -0.20% Visa 340.74 4.29 -1.24% Oracle 262.61 5.72 2.23% JPMorgan 311.12 1.68 0.54% J&amp;J 188.87 0.18 -0.10% P&amp;G 150.37 0.79 0.53% Exxon Mobil'), Document(metadata={'_id': '931d6254-5dcf-5125-afc0-371ccb55c502', '_collection_name': 'crawl_collection', 'rerank_score': -0.9210560917854309}, page_content='31, 2025, gaining 0.26% from the previous session. Over the past month, the index has climbed 1.92% and is up 19.40% compared to the same time last year, according to trading on a contract for difference (CFD) that tracks this benchmark index from United States. Historically, the United States Stock Market Index reached an all time high of 6921.75 in October of 2025. United States Stock Market Index - data, forecasts, historical chart - was last updated on November 2 of 2025. The main stock market index of'), Document(metadata={'_id': '1f6c2099-7e4b-5aec-bf87-c97fb04e328d', '_collection_name': 'crawl_collection', 'rerank_score': -1.375203013420105}, page_content='October, the S&amp;P 500 gained more than 2%, the Nasdaq jumped nearly 4.1%, and the Dow Jones advanced 2.4%, putting the Dow on track for its sixth consecutive monthly gain, its longest winning streak since 2018. 2025-10-31 Related US Stocks Close Higher Week Ahead - Nov 3rd Treasury Yield Rally Pauses Dollar Set to Close October on a Strong Note Chicago PMI Points to Slower Contraction in October Grainger earnings above expectations at 10.21 USD AbbVie earnings below expectations at 1.86 USD Dominion')]
+
+
+Question:
+
+what is the latest stock market news
+
+
+Answer clearly and concisely based only on the given context. If the context doesn't contain relevant information, say so. When citing information, you can reference sources by their numbers (e.g., "According to Source 1...").
+
+
+================================================================================
+
+
+========Answer========
+
+The latest stock market news indicates that as of November 2nd, 2025: the Nasdaq Composite rose by 0.7%, and the S&P 500 gained 0.3% on Friday (Document with _id: 'efd4ee42-5df0-541d-a776-c70b62c8303f'). Additionally, there has been a positive impact from tech stocks such as Amazon shares which surged 9.58% following an increase of $21.36 per share in actual value (Document with _id: '4cefc808-29b5-54cc-bd2d-0053ddf94dd6'). Moreover, the United States Stock Market Index reached a historical high at 6921.75 during October of 2025 (Document with _id: 'efd4ee42-5df0-541d-a776-c70b62c8303f'). The Dow Jones is on track for its sixth consecutive monthly gain, marking the longest winning streak since 2018 (Document with _id: 'efd4ee42-5df0-541d-a776-c70b62c8303f'). However, there was a recent Treasury Yield Rally Pause and the Chicago PMI Points to Slower Contraction in October (Document with _id: '931d6254-5dcf-5125-afc0-371ccb55c502').

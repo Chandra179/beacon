@@ -124,7 +124,7 @@ Answer clearly and concisely based only on the given context. If the context doe
 
     rag_chain = (
         {
-            "context": RunnableLambda(retrieve_and_rerank) | RunnableLambda(format_docs_with_metadata),
+            "context": RunnableLambda(retrieve_and_rerank),
             "input": RunnablePassthrough(),
         }
         | RunnableLambda(log_prompt)
