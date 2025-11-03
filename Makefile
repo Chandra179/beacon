@@ -1,5 +1,5 @@
 rd:
-	DOCKER_BUILDKIT=1 docker compose up -d --build axora-rag 
+	DOCKER_BUILDKIT=1 docker compose up -d --build beacon-rag 
 
 run:
 	DOCKER_BUILDKIT=1 docker compose up -d

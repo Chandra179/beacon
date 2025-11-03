@@ -13,6 +13,7 @@ services:
       - EMBEDDING_API_URL=http://host.docker.internal:8000
       - OLLAMA_HOST=host.docker.internal:11434
       - OLLAMA_MODEL=phi3:mini
+      - RERANKER_MODEL=BAAI/bge-reranker-large
     ports:
       - "8001:8001"
     volumes:
@@ -21,29 +22,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 256M
-
-  beacon-reranker:
-    build:
-      context: ./reranker_service
-      dockerfile: Dockerfile
-    container_name: beacon-reranker
-    ports:
-      - "8002:8002"
-    deploy:
-      resources:
-        limits:
           cpus: '2.0'
           memory: 4G
         reservations:
           cpus: '1.0'
           memory: 2G
-    environment:
-      - MODEL_NAME=BAAI/bge-reranker-large
-      - PORT=8002
-
-  

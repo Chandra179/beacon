@@ -1,24 +1,34 @@
 import os
-import requests
-from typing import List, Tuple
+from typing import List
 from langchain_core.documents import Document
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
+import torch
 
 class BGEReranker:
-    def __init__(self, api_url: str = None):
-        self.api_url = api_url or os.getenv('RERANKER_API_URL', 'http://localhost:8002')
-        self._check_health()
+    def __init__(self, model_name: str = None):
+        self.model_name = model_name or os.getenv('RERANKER_MODEL', 'BAAI/bge-reranker-large')
+        self.model = None
+        self.tokenizer = None
+        self.device = None
+        self._load_model()
     
-    def _check_health(self):
-        """Check if reranker service is healthy"""
+    def _load_model(self):
+        """Load the reranker model"""
+        print(f"Loading reranker model: {self.model_name}")
+        
+        # Determine device
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        print(f"Using device: {self.device}")
+        
         try:
-            response = requests.get(f"{self.api_url}/health", timeout=5)
-            if response.status_code == 200:
-                health = response.json()
-                print(f"✓ Reranker service healthy - Device: {health.get('device')}")
-                return True
+            self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+            self.model = AutoModelForSequenceClassification.from_pretrained(self.model_name)
+            self.model.to(self.device)
+            self.model.eval()
+            print(f"✓ Reranker model loaded successfully on {self.device}")
         except Exception as e:
-            print(f"⚠ Warning: Reranker service not available: {e}")
-            return False
+            print(f"✗ Error loading reranker model: {e}")
+            raise
     
     def rerank_documents(
         self, 
@@ -53,22 +63,30 @@ class BGEReranker:
                     text = doc.page_content
                 doc_texts.append(text)
             
-            # Call reranker API
-            response = requests.post(
-                f"{self.api_url}/rerank",
-                json={
-                    "query": query,
-                    "documents": doc_texts,
-                    "top_k": top_k
-                },
-                timeout=30
-            )
-            response.raise_for_status()
-            result = response.json()
+            # Create query-document pairs
+            pairs = [[query, doc] for doc in doc_texts]
             
-            # Reorder documents based on reranker scores
+            # Tokenize and get scores
+            with torch.no_grad():
+                inputs = self.tokenizer(
+                    pairs,
+                    padding=True,
+                    truncation=True,
+                    return_tensors='pt',
+                    max_length=512
+                ).to(self.device)
+                
+                # Get scores
+                scores = self.model(**inputs, return_dict=True).logits.view(-1).float()
+                scores = scores.cpu().numpy().tolist()
+            
+            # Sort by score (descending)
+            scored_docs = [(i, score) for i, score in enumerate(scores)]
+            scored_docs.sort(key=lambda x: x[1], reverse=True)
+            
+            # Get top-k
             reranked_docs = []
-            for idx, score in zip(result['indices'], result['scores']):
+            for idx, score in scored_docs[:top_k]:
                 doc = documents[idx]
                 # Add reranker score to metadata
                 doc.metadata['rerank_score'] = score
@@ -130,6 +148,14 @@ class BGEReranker:
             print(f"  {i}. Score: {score:.4f} | {title}")
 
 
-def get_reranker(api_url: str = None) -> BGEReranker:
-    """Factory function to get reranker instance"""
-    return BGEReranker(api_url=api_url)
+# Global reranker instance (lazy loaded)
+_reranker_instance = None
+
+def get_reranker(model_name: str = None) -> BGEReranker:
+    """Factory function to get reranker instance (singleton pattern)"""
+    global _reranker_instance
+    
+    if _reranker_instance is None:
+        _reranker_instance = BGEReranker(model_name=model_name)
+    
+    return _reranker_instance

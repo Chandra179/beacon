@@ -1,9 +1,7 @@
-langchain
-langchain-community
-langchain-core
-langchain-ollama
+langchain_core
+langchain_ollama
 langchain_qdrant
 qdrant_client
 Requests
-uvicorn
-fastapi
+torch
+transformers
